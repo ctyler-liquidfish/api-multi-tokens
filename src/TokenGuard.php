@@ -1,23 +1,15 @@
 <?php
 
-namespace Mayoz\Token;
+namespace Liquidfish\ApiMultiToken;
 
 use Illuminate\Http\Request;
 use Illuminate\Auth\GuardHelpers;
 use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
+use Illuminate\Support\Facades\Hash;
 
-class TokenGuard implements Guard
+class TokenGuard extends \Illuminate\Auth\TokenGuard
 {
-    use GuardHelpers;
-
-    /**
-     * The request instance.
-     *
-     * @var \Illuminate\Http\Request
-     */
-    protected $request;
-
     /**
      * The currently authenticated token.
      *
@@ -26,32 +18,28 @@ class TokenGuard implements Guard
     protected $token;
 
     /**
-     * The name of the query string item from the request containing the API token.
-     *
-     * @var string
-     */
-    protected $inputKey;
-
-    /**
-     * The name of the token "column" in persistent storage.
-     *
-     * @var string
-     */
-    protected $storageKey;
-
-    /**
-     * Create a new token guard instance.
+     * Create a new authentication guard.
      *
      * @param  \Illuminate\Contracts\Auth\UserProvider  $provider
      * @param  \Illuminate\Http\Request  $request
+     * @param  string  $inputKey
+     * @param  string  $storageKey
+     * @param  bool  $hash
      * @return void
      */
-    public function __construct(UserProvider $provider, Request $request)
+    public function __construct(
+        UserProvider $provider,
+        Request $request,
+        $hash = false,
+        $inputKey = 'api_token',
+        $storageKey = 'api_token'
+    )
     {
+        $this->hash = $hash;
         $this->request = $request;
         $this->provider = $provider;
-        $this->inputKey = 'api_token';
-        $this->storageKey = 'api_token';
+        $this->inputKey = $inputKey;
+        $this->storageKey = $storageKey;
     }
 
     /**
@@ -61,11 +49,21 @@ class TokenGuard implements Guard
      */
     public function user()
     {
-        if (is_null($this->user) && ($token = $this->token()) && $token->isNotExpired()) {
-            $this->user = (clone $token)->user;
+        // If we've already retrieved the user for the current request we can just
+        // return it back immediately. We do not want to fetch the user data on
+        // every call to this method because that would be tremendously slow.
+        if (! is_null($this->user)) {
+            return $this->user;
+        }
+        $user = null;
+
+        $token = $this->token();
+
+        if (! empty($token)) {
+            $user = $token->user;
         }
 
-        return $this->user;
+        return $this->user = $user;
     }
 
     /**
@@ -75,43 +73,33 @@ class TokenGuard implements Guard
      */
     public function token()
     {
-        if (is_null($this->token)) {
-            $this->token = $this->retrieveTokenForRequest(
-                [$this->inputKey => $this->getTokenCredentials()]
-            );
+        if (! is_null($this->token)) {
+            return $this->token;
         }
 
-        return $this->token;
+        return $this->token = $this->retrieveToken(
+            $this->getTokenForRequest()
+        );
     }
 
-    /**
-     * Get the token credentials for the current request.
-     *
-     * @return string
-     */
-    protected function getTokenCredentials()
+    protected function retrieveToken($requestToken)
     {
-        $token = $this->request->get($this->inputKey);
+        if ($this->hash) {
+            $hash = substr($requestToken, -60);
+            $requestToken = substr($requestToken, 0, -60);
+        }
 
-        if (empty($token)) {
-            $token = $this->request->bearerToken();
+        if (empty($requestToken)) return null;
+
+        $token = $this->provider->retrieveByCredentials([
+            $this->storageKey => $requestToken,
+        ]);
+
+        if (! empty ($token) && $this->hash && ! Hash::check($hash, $token->hash)) {
+            return false;
         }
 
         return $token;
-    }
-
-    /**
-     * Retrieve the token for the current request.
-     *
-     * @return \Illuminate\Database\Eloquent\Model|null
-     */
-    protected function retrieveTokenForRequest(array $credentials)
-    {
-        if (array_key_exists($this->inputKey, $credentials)) {
-            return $this->provider->retrieveByCredentials(
-                [$this->storageKey => $credentials[$this->inputKey]]
-            );
-        }
     }
 
     /**
@@ -122,8 +110,12 @@ class TokenGuard implements Guard
      */
     public function validate(array $credentials = [])
     {
-        if ($token = $this->retrieveTokenForRequest($credentials)) {
-            return $token->isNotExpired();
+        if (empty($credentials[$this->inputKey])) {
+            return false;
+        }
+
+        if ($this->retrieveToken($credentials[$this->inputKey])) {
+            return true;
         }
 
         return false;

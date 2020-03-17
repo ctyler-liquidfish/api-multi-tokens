@@ -1,10 +1,6 @@
 # Laravel Multi Token
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/mayoz/laravel-tokens.svg?style=flat-square)](https://packagist.org/packages/mayoz/laravel-tokens)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
-[![Quality Score](https://img.shields.io/scrutinizer/g/mayoz/laravel-tokens.svg?style=flat-square)](https://scrutinizer-ci.com/g/mayoz/laravel-tokens)
-[![StyleCI](https://styleci.io/repos/122767611/shield?branch=master)](https://styleci.io/repos/122767611)
-[![Total Downloads](https://img.shields.io/packagist/dt/mayoz/laravel-tokens.svg?style=flat-square)](https://packagist.org/packages/mayoz/laravel-tokens)
 
 ## Introduction
 
@@ -17,7 +13,7 @@ This package is for Laravel 5.5 and above.
 You can install the package via composer using:
 
 ```
-composer require mayoz/laravel-tokens
+composer require ctyler-liquidfish/laravel-tokens
 ```
 
 The service provider will automatically get registered for Laravel 5.5 and above versions. If you want you can add the service provider in `config/app.php` file:
@@ -25,14 +21,14 @@ The service provider will automatically get registered for Laravel 5.5 and above
 ```php
 'providers' => [
     // ...
-    Mayoz\Token\TokenServiceProvider::class,
+    Liquidfish\ApiMultiToken\TokenServiceProvider::class,
 ];
 ```
 
 If you are going to make changes the default migration, you can publish the `migration` file with:
 
 ```
-php artisan vendor:publish --provider="Mayoz\Token\TokenServiceProvider" --tag="laravel-tokens-migrations"
+php artisan vendor:publish --provider="Liquidfish\ApiMultiToken\TokenServiceProvider" --tag="laravel-tokens-migrations"
 ```
 
 Then, you can create the `tokens` table by running the migrations:
@@ -44,7 +40,7 @@ php artisan migrate
 You can publish the config file with:
 
 ```
-php artisan vendor:publish --provider="Mayoz\Token\TokenServiceProvider" --tag="laravel-tokens-config"
+php artisan vendor:publish --provider="Liquidfish\ApiMultiToken\TokenServiceProvider" --tag="laravel-tokens-config"
 ```
 
 If you need you are free to change your `config` file.
@@ -53,14 +49,14 @@ If you need you are free to change your `config` file.
 
 After installation, you can implement the new feature for your application.
 
-Add the `Mayoz\Token\HasToken` trait to your `App\User` model. This trait will provide a few helper methods to your model which allow you to inspect the authenticated user's tokens:
+Add the `Liquidfish\ApiMultiToken\HasToken` trait to your `App\User` model. This trait will provide a few helper methods to your model which allow you to inspect the authenticated user's tokens:
 
 ```php
 <?php
 
 namespace App;
 
-use Mayoz\Token\HasToken;
+use Liquidfish\ApiMultiToken\HasToken;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -89,7 +85,7 @@ And finally, you will add the new guard to your application. Open the `config/au
 
         'tokens' => [
             'driver' => 'eloquent',
-            'model' => Mayoz\Token\Token::class,
+            'model' => Liquidfish\ApiMultiToken\Token::class,
         ],
     ],
 ```
@@ -118,12 +114,12 @@ class TokenController
 }
 ```
 
-By default tokens never expire if you do not pass the lifetime when generation. For define expiration, you can pass the time period parameter (in minutes) to `generateToken` method.
+By default tokens never expire if you do not pass the lifetime when generation. For define expiration, you can pass the time period parameter (as Carbon) to `generateToken` method.
 
 Generate a new token of 10 minutes life with:
 
 ```php
-$token = $request->user()->generateToken(10);
+$token = $request->user()->generateToken(now()->addMinutes(10));
 ```
 
 The token are not refreshed, token will die when expired. The authentication attempts with expired token will fail.
@@ -174,7 +170,7 @@ Let's make change to generate of `uuid4` string. Open the `app/Providers/AuthSer
 
 namespace App\Providers;
 
-use Mayoz\Token\Generator;
+use Liquidfish\ApiMultiToken\Generator;
 // ...
 
 class AuthServiceProvider extends ServiceProvider

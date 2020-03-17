@@ -15,8 +15,9 @@ class CreateTokensTable extends Migration
     {
         Schema::create('tokens', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('user_id')->index();
-            $table->string('api_token', 36)->unique();
+            $table->unsignedBigInteger('user_id')->index();
+            $table->string('api_token', 36)->unique()->index();
+            $table->string('hash', 60)->nullable();
             $table->timestamp('expired_at')->nullable();
             $table->timestamps();
         });

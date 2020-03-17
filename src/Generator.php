@@ -1,6 +1,8 @@
 <?php
 
-namespace Mayoz\Token;
+namespace Liquidfish\ApiMultiToken;
+
+use Illuminate\Support\Str;
 
 class Generator
 {
@@ -20,7 +22,7 @@ class Generator
     {
         if (is_null(static::$handler)) {
             static::$handler = function () {
-                return str_random(36);
+                return Str::random(36);
             };
         }
 

@@ -1,8 +1,10 @@
 <?php
 
-namespace Mayoz\Token;
+namespace Liquidfish\ApiMultiToken;
 
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 trait HasToken
 {
@@ -19,18 +21,22 @@ trait HasToken
     /**
      * Generate a new token and returns it.
      *
-     * @param  int  $minute
+     * @param  \DateTime|Carbon|null  $expiration
      * @return \Illuminate\Database\Eloquent\Model
      */
-    public function generateToken($minute = null)
+    public function generateToken(?\DateTime $expiration = null)
     {
-        $expired_at = ((int) $minute > 0)
-            ? Carbon::now()->addMinutes($minute)
-            : null;
-
-        return $this->tokens()->create([
-            'api_token' => Generator::generate(),
-            'expired_at' => $expired_at,
-        ]);
+        $token = Generator::generate();
+        $data = [
+            'api_token' => $token,
+            'expired_at' => $expiration,
+        ];
+        $secureLength = config('laravel-tokens.secure_length');
+        if(!empty($secureLength)){
+            $token .= $secure = Str::random($secureLength);
+            $data['hash'] = Hash::make($secure);
+        }
+        $this->tokens()->create($data);
+        return $token;
     }
 }

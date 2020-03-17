@@ -4,6 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Secure Hash
+    |--------------------------------------------------------------------------
+    |
+    | Add a hash to the tokens table which acts like a password.
+    |
+    | Set to 0 or null (empty) to not use this feature.
+    |
+    */
+
+    'secure_length' => 55,
+
+    /*
+    |--------------------------------------------------------------------------
     | User Model
     |--------------------------------------------------------------------------
     |
@@ -29,6 +42,6 @@ return [
     |
     */
 
-    'token' => Mayoz\Token\Token::class,
+    'token' => Liquidfish\ApiMultiToken\Token::class,
 
 ];

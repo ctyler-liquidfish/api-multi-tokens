@@ -1,6 +1,6 @@
 <?php
 
-namespace Mayoz\Token;
+namespace Liquidfish\ApiMultiToken;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -21,6 +21,7 @@ class Token extends Model
      */
     protected $fillable = [
         'api_token',
+        'hash',
         'expired_at',
     ];
 

@@ -1,15 +1,18 @@
 {
-    "name": "mayoz/laravel-tokens",
+    "name": "ctyler-liquidfish/laravel-tokens",
     "description": "Multi-token support for Laravel Auth.",
     "keywords": ["laravel", "auth", "multiple token"],
     "license": "MIT",
     "support": {
-        "issues": "https://github.com/mayoz/laravel-tokens/issues",
-        "source": "https://github.com/mayoz/laravel-tokens"
+        "source": "https://github.com/ctyler-larafish/laravel-tokens"
     },
     "authors": [
         {
-            "name": "Sercan Cakir",
+            "name": "J. Chris Tyler",
+            "email": "ctyler@liquidfish.com"
+        },
+        {
+            "name": "Sercan Cakir (original)",
             "email": "srcnckr@gmail.com"
         }
     ],
@@ -23,13 +26,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Mayoz\\Token\\": "src/"
+            "Liquidfish\\Token\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Mayoz\\Token\\TokenServiceProvider"
+                "Liquidfish\\Token\\TokenServiceProvider"
             ]
         }
     },

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mayoz\Token;
+namespace Liquidfish\ApiMultiToken;
 
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
@@ -48,9 +48,11 @@ class TokenServiceProvider extends ServiceProvider
     protected function registerGuard()
     {
         Auth::extend('multi-token', function ($app, $name, array $config) {
-            return tap($this->makeGuard($config), function ($guard) use ($app) {
-                $this->app->refresh('request', $guard, 'setRequest');
-            });
+            return new TokenGuard(
+                Auth::createUserProvider($config['provider']),
+                $app['request'],
+                $config['hash']
+            );
         });
     }
 
