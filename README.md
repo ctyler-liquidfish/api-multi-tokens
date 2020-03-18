@@ -15,7 +15,7 @@ This project is not (yet) on packagist, so to install it, add the repository dir
 "repositories": [
     {
         "type": "vcs",
-        "url": "https://github.com/ctyler-liquidfish/api-multi-token"
+        "url": "https://github.com/ctyler-liquidfish/api-multi-tokens"
     }
 ],
 ```
