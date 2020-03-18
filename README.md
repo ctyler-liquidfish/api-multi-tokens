@@ -6,7 +6,7 @@
 
 This package provides a simple solution for give multiple token to your application's users. This solution is similar to Laravel's TokenGuard class.
 
-This package is for Laravel 5.5 and above.
+This package is for Laravel 6.0 and above.
 
 ## Installation
 
