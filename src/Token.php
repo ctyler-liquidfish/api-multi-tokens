@@ -63,6 +63,11 @@ class Token extends Model
         return ! $this->isExpired();
     }
 
+    public function revoke()
+    {
+        $this->update(['expired_at'=>now()]);
+    }
+
     /**
      * Get the user that owns the token.
      *

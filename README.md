@@ -10,8 +10,16 @@ This package is for Laravel 5.5 and above.
 
 ## Installation
 
-You can install the package via composer using:
-
+This project is not (yet) on packagist, so to install it, add the repository directly:
+```
+"repositories": [
+    {
+        "type": "vcs",
+        "url": "https://github.com/ctyler-liquidfish/api-multi-token"
+    }
+],
+```
+then
 ```
 composer require ctyler-liquidfish/laravel-tokens
 ```
@@ -25,7 +33,7 @@ The service provider will automatically get registered for Laravel 5.5 and above
 ];
 ```
 
-If you are going to make changes the default migration, you can publish the `migration` file with:
+Publish the `migration` file with:
 
 ```
 php artisan vendor:publish --provider="Liquidfish\ApiMultiToken\TokenServiceProvider" --tag="laravel-tokens-migrations"
@@ -122,19 +130,40 @@ Generate a new token of 10 minutes life with:
 $token = $request->user()->generateToken(now()->addMinutes(10));
 ```
 
-The token are not refreshed, token will die when expired. The authentication attempts with expired token will fail.
+The tokens are not refreshed, tokens will die when expired. The authentication attempts with expired token will fail.
+
+Tokens can be revoked, such as in a logout function:
+```php
+<?php
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+class LogoutController
+{
+    public function logout(Request $request)
+    {
+        // ...
+        $token = $request->token();
+        $token->revoke();
+        // ...
+    }
+}
+```
 
 The authentication process is similar to that of the standard Laravel api_token flows:
 
 The token guard is looking for the token:
 
 1. Firstly looking the URL for parameter `?api_token=XXX`
-2. If not exists token, looking the header for `Authorization: Bearer XXX`
+2. Secondly for an input field `api_token`
+3. Thirdly looking the header for `Authorization: Bearer XXX`
+4. Lastly looking for a header `PHP_AUTH_PW: XXX`
 
 Finally, if you need the current token model information underlying the authentication process, you can use the `token` method.
 
 
-```
+```php
 <?php
 
 namespace App\Http\Controllers;
@@ -204,10 +233,6 @@ Cheers.
 ### Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
-
-## Contributing
-
-Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## Security Vulnerabilities
 

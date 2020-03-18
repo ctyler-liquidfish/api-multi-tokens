@@ -81,6 +81,7 @@ class TokenGuard extends \Illuminate\Auth\TokenGuard
 
     protected function retrieveToken($requestToken)
     {
+        $hash = null;
         if ($secured = !empty($secureLength = config('laravel-tokens.secure_length'))) {
             $hash = substr($requestToken, -$secureLength);
             $requestToken = substr($requestToken, 0, -$secureLength);
@@ -88,12 +89,14 @@ class TokenGuard extends \Illuminate\Auth\TokenGuard
 
         if (empty($requestToken)) return null;
 
+        /** @var Token $token */
         $token = $this->provider->retrieveByCredentials([
             $this->storageKey => $requestToken,
         ]);
 
-        if ($secured && ! empty ($token) && ! Hash::check($hash, $token->hash)) {
-            return false;
+        if (! empty ($token)) {
+            if ($token->isExpired()) return false;
+            if ($secured && ! Hash::check($hash, $token->hash)) return false;
         }
 
         return $token;
