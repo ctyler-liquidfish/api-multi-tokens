@@ -2,6 +2,7 @@
 
 namespace Liquidfish\ApiMultiToken;
 
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -21,10 +22,11 @@ trait HasToken
     /**
      * Generate a new token and returns it.
      *
-     * @param  \DateTime|Carbon|null  $expiration
-     * @return \Illuminate\Database\Eloquent\Model
+     * @param \DateTime|Carbon|null $expiration
+     * @param Model|null $model
+     * @return string
      */
-    public function generateToken(?\DateTime $expiration = null)
+    public function generateToken(?\DateTime $expiration = null, &$model = null)
     {
         $token = Generator::generate();
         $data = [
@@ -33,10 +35,11 @@ trait HasToken
         ];
         $secureLength = config('laravel-tokens.secure_length');
         if(!empty($secureLength)){
-            $token .= $secure = Str::random($secureLength);
+            $secure = Str::random($secureLength);
+            $token .= $secure;
             $data['hash'] = Hash::make($secure);
         }
-        $this->tokens()->create($data);
+        $model = $this->tokens()->create($data);
         return $token;
     }
 }

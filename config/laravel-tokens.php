@@ -9,7 +9,7 @@ return [
     |
     | Add a hash to the tokens table which acts like a password.
     |
-    | Set to 0 or null (empty) to not use this feature.
+    | Set to an empty value  (e.g. 0, false, or null) to not use this feature.
     |
     */
 

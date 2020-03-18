@@ -50,8 +50,7 @@ class TokenServiceProvider extends ServiceProvider
         Auth::extend('multi-token', function ($app, $name, array $config) {
             return new TokenGuard(
                 Auth::createUserProvider($config['provider']),
-                $app['request'],
-                $config['hash']
+                $app['request']
             );
         });
     }

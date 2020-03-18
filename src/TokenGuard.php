@@ -24,18 +24,15 @@ class TokenGuard extends \Illuminate\Auth\TokenGuard
      * @param  \Illuminate\Http\Request  $request
      * @param  string  $inputKey
      * @param  string  $storageKey
-     * @param  bool  $hash
      * @return void
      */
     public function __construct(
         UserProvider $provider,
         Request $request,
-        $hash = false,
         $inputKey = 'api_token',
         $storageKey = 'api_token'
     )
     {
-        $this->hash = $hash;
         $this->request = $request;
         $this->provider = $provider;
         $this->inputKey = $inputKey;
@@ -84,9 +81,9 @@ class TokenGuard extends \Illuminate\Auth\TokenGuard
 
     protected function retrieveToken($requestToken)
     {
-        if ($this->hash) {
-            $hash = substr($requestToken, -60);
-            $requestToken = substr($requestToken, 0, -60);
+        if (!empty($secureLength = config('laravel-tokens.secure_length'))) {
+            $hash = substr($requestToken, -$secureLength);
+            $requestToken = substr($requestToken, 0, -$secureLength);
         }
 
         if (empty($requestToken)) return null;

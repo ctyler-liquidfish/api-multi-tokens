@@ -1,10 +1,10 @@
 {
-    "name": "ctyler-liquidfish/laravel-tokens",
-    "description": "Multi-token support for Laravel Auth.",
+    "name": "ctyler-liquidfish/api-multi-tokens",
+    "description": "Laravel API token guard with multiple tokens. Based off mayoz/laravel-tokens.",
     "keywords": ["laravel", "auth", "multiple token"],
     "license": "MIT",
     "support": {
-        "source": "https://github.com/ctyler-larafish/laravel-tokens"
+        "source": "https://github.com/ctyler-larafish/api-multi-tokens"
     },
     "authors": [
         {
@@ -26,13 +26,13 @@
     },
     "autoload": {
         "psr-4": {
-            "Liquidfish\\Token\\": "src/"
+            "Liquidfish\\ApiMultiToken\\": "src/"
         }
     },
     "extra": {
         "laravel": {
             "providers": [
-                "Liquidfish\\Token\\TokenServiceProvider"
+                "Liquidfish\\ApiMultiToken\\TokenServiceProvider"
             ]
         }
     },

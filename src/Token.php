@@ -5,6 +5,13 @@ namespace Liquidfish\ApiMultiToken;
 use Illuminate\Support\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * Class Token
+ * @package Liquidfish\ApiMultiToken
+ * @property string $api_token
+ * @property string $hash
+ * @property Carbon $expired_at
+ */
 class Token extends Model
 {
     /**
@@ -33,21 +40,6 @@ class Token extends Model
     protected $dates = ['expired_at'];
 
     /**
-     * Set the expired timestamp value.
-     *
-     * @param  mixed  $value
-     * @return void
-     */
-    public function setExpiredAtAttribute($value)
-    {
-        if (! is_null($value) && ! $value instanceof Carbon) {
-            $value = Carbon::parse($value);
-        }
-
-        $this->attributes['expired_at'] = $value;
-    }
-
-    /**
      * Determine if the token is expired or not.
      *
      * @return bool
@@ -58,7 +50,7 @@ class Token extends Model
             return false;
         }
 
-        return now()->greaterThan(new Carbon($this->expired_at));
+        return now()->greaterThan($this->expired_at);
     }
 
     /**
