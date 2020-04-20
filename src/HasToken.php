@@ -7,6 +7,12 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
+/**
+ * Trait HasToken
+ * @property Token  $token      When authenticated via token, contains the authenticating token.
+ * @property \Illuminate\Support\Collection|Token[]  $tokens
+ * @mixin Model
+ */
 trait HasToken
 {
     /**

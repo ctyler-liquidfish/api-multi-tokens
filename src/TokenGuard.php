@@ -3,8 +3,6 @@
 namespace Liquidfish\ApiMultiToken;
 
 use Illuminate\Http\Request;
-use Illuminate\Auth\GuardHelpers;
-use Illuminate\Contracts\Auth\Guard;
 use Illuminate\Contracts\Auth\UserProvider;
 use Illuminate\Support\Facades\Hash;
 
@@ -58,6 +56,7 @@ class TokenGuard extends \Illuminate\Auth\TokenGuard
 
         if (! empty($token)) {
             $user = $token->user;
+            $user->setRelation('token',$token);
         }
 
         return $this->user = $user;
